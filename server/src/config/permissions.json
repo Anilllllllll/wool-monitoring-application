@@ -1,0 +1,45 @@
+{
+    "FARMER": [
+        "sell_wool",
+        "view_own_batches",
+        "view_batch_status",
+        "view_quality_results",
+        "edit_own_profile"
+    ],
+    "MILL_OPERATOR": [
+        "create_batch",
+        "update_batch_stage",
+        "view_all_batches",
+        "access_monitoring_dashboard",
+        "add_processing_logs",
+        "view_quality_reports",
+        "view_news"
+    ],
+    "QUALITY_INSPECTOR": [
+        "create_quality_inspection",
+        "view_all_batches",
+        "approve_batch",
+        "reject_batch",
+        "upload_quality_certificate",
+        "view_quality_analytics",
+        "view_quality_logs"
+    ],
+    "BUYER": [
+        "view_products",
+        "buy_wool",
+        "view_order_history",
+        "view_quality_grades",
+        "get_news_updates",
+        "download_invoice"
+    ],
+    "ADMIN": [
+        "manage_users",
+        "manage_roles",
+        "access_all_logs",
+        "access_all_analytics",
+        "manage_news",
+        "manage_shop",
+        "manage_batches",
+        "override_batch_status"
+    ]
+}
