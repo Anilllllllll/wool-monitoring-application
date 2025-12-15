@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Wool Monitoring Application 🐑
 
 A modern, enterprise-grade full-stack application for managing the wool supply chain, from farm to fabric. This platform serves Farmers, Mill Operators, Quality Inspectors, and Buyers with tailored dashboards and tools.
@@ -110,3 +111,7 @@ The app will be available at `http://localhost:5173`.
 ## 🛡️ License
 
 This project is licensed under the MIT License.
+=======
+# wool-monitoring-application
+A full-stack wool monitoring and management application with real-time tracking, quality inspection workflows, analytics, and a modern SaaS-style dashboard.
+>>>>>>> db53ab2823bb1b9883e3f757d666f20cecfb9cab
