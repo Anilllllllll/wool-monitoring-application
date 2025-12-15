@@ -51,6 +51,17 @@ const woolBatchSchema = mongoose.Schema({
         enum: ['Pending', 'Approved', 'Rejected'],
         default: 'Pending',
     },
+    financials: {
+        basePricePerKg: { type: Number, default: 0 },
+        qualityBonus: { type: Number, default: 0 },
+        grossRevenue: { type: Number, default: 0 },
+        serviceFees: {
+            inspection: { type: Number, default: 50 },
+            processing: { type: Number, default: 0 },
+            platform: { type: Number, default: 0 }
+        },
+        netFarmerEarnings: { type: Number, default: 0 }
+    },
     processingLogs: [{
         stage: String,
         timestamp: { type: Date, default: Date.now },

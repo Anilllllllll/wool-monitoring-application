@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom';
 import client from '../api/axiosClient';
 import BatchTimeline from '../components/BatchTimeline';
 import { useAuth } from '../context/AuthContext';
-import { FileText, Thermometer, PenTool, CheckCircle, XCircle, ArrowRight, Plus } from 'lucide-react';
+import { FileText, Thermometer, PenTool, CheckCircle, XCircle, ArrowRight, Plus, DollarSign } from 'lucide-react';
+import { motion } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -15,7 +16,7 @@ import { Input } from '../components/ui/Input';
 const BatchDetail = () => {
     const { id } = useParams();
     const [batch, setBatch] = useState(null);
-    const { hasPermission } = useAuth();
+    const { hasPermission, user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(null);
     const [showInspectionModal, setShowInspectionModal] = useState(false);
@@ -44,11 +45,19 @@ const BatchDetail = () => {
         }
     };
 
+    const [inspectionSuccess, setInspectionSuccess] = useState(false);
+
+    // ...
+
     const handleApprove = async () => {
         try {
             await client.patch(`/quality/approve/${id}`);
+            // Show success in modal first? Or close and show?
+            // Let's close and show on main page to verify update.
             setShowInspectionModal(false);
             fetchBatch();
+            setInspectionSuccess(true);
+            setTimeout(() => setInspectionSuccess(false), 3000);
         } catch (error) {
             alert('Failed to approve');
         }
@@ -60,10 +69,45 @@ const BatchDetail = () => {
             await client.patch(`/quality/reject/${id}`);
             setShowInspectionModal(false);
             fetchBatch();
+            setInspectionSuccess(true);
+            setTimeout(() => setInspectionSuccess(false), 3000);
         } catch (error) {
             alert('Failed to reject');
         }
     };
+
+    // ...
+
+    {/* Inspection Action */ }
+    {
+        hasPermission('approve_batch') && (
+            <>
+                <Card className="bg-gradient-to-r from-primary-900/40 to-secondary-900/40 border-primary-500/30 flex justify-between items-center">
+                    <div>
+                        <h3 className="text-lg font-bold text-white">Quality Inspection</h3>
+                        <p className="text-sm text-slate-400">Review images and batch data.</p>
+                    </div>
+                    <Button onClick={() => setShowInspectionModal(true)} className="shadow-neon">
+                        <FileText size={18} className="mr-2" /> Start Review
+                    </Button>
+                </Card>
+                {inspectionSuccess && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-2 flex items-center gap-2 text-emerald-400 font-medium"
+                    >
+                        <CheckCircle size={20} className="text-emerald-400" />
+                        <span>Report successfully submitted!</span>
+                    </motion.div>
+                )}
+            </>
+        )
+    }
+
+    const [noteSuccess, setNoteSuccess] = useState(false);
+
+    // ... (existing code)
 
     const handleAddLog = (note) => {
         if (note) {
@@ -71,10 +115,55 @@ const BatchDetail = () => {
             client.post(`/batches/${id}/logs`, { note })
                 .then(() => {
                     fetchBatch();
+                    setNoteSuccess(true);
+                    setTimeout(() => setNoteSuccess(false), 3000);
                 })
                 .catch(err => alert('Failed to add log'));
         }
     };
+
+    // ... (existing code)
+
+    {
+        hasPermission('add_processing_logs') && (
+            <div className="mt-4 pt-4 border-t border-white/10">
+                <div className="flex gap-2">
+                    <input
+                        id="newLogInput"
+                        className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-primary-500"
+                        placeholder="Add note..."
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleAddLog(e.target.value);
+                                e.target.value = '';
+                            }
+                        }}
+                    />
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => {
+                            const el = document.getElementById('newLogInput');
+                            handleAddLog(el.value);
+                            el.value = '';
+                        }}
+                    >
+                        <Plus size={16} />
+                    </Button>
+                </div>
+                {noteSuccess && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-2 text-emerald-400 text-sm mt-3 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20"
+                    >
+                        <CheckCircle size={16} />
+                        <span>Note added successfully!</span>
+                    </motion.div>
+                )}
+            </div>
+        )
+    }
 
     if (loading || !batch) return (
         <DashboardLayout>
@@ -148,6 +237,87 @@ const BatchDetail = () => {
                                 <p className="text-xl font-bold text-white">{batch.moisture || 0}%</p>
                             </Card>
                         </div>
+
+                        {/* Financials Section */}
+                        {/* Financials Section - Role Based */}
+                        {batch.financials && (
+                            <>
+                                {/* FARMER VIEW: Full Breakdown */}
+                                {user?.role === 'FARMER' && batch.financials.grossRevenue > 0 && (
+                                    <Card className="p-6 bg-gradient-to-br from-emerald-900/20 to-emerald-900/5 border-emerald-500/20">
+                                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                            <DollarSign className="text-emerald-400" /> Financial Overview
+                                        </h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            <div>
+                                                <p className="text-slate-400 text-sm">Gross Revenue</p>
+                                                <p className="text-2xl font-bold text-white">${batch.financials.grossRevenue?.toFixed(2)}</p>
+                                                <p className="text-xs text-slate-500 mt-1">
+                                                    Based on {batch.weight}kg @ ${batch.financials.basePricePerKg}/kg
+                                                    {batch.financials.qualityBonus !== 0 && (
+                                                        <span className={batch.financials.qualityBonus > 0 ? "text-emerald-400 ml-1" : "text-red-400 ml-1"}>
+                                                            ({batch.financials.qualityBonus > 0 ? '+' : ''}{batch.financials.qualityBonus}/kg adj)
+                                                        </span>
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-slate-400 text-sm">Net Farmer Earnings</p>
+                                                <p className="text-3xl font-bold text-emerald-400">${batch.financials.netFarmerEarnings?.toFixed(2)}</p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-3 gap-4 text-sm">
+                                            <div>
+                                                <p className="text-slate-500">Inspection Fee</p>
+                                                <p className="text-white">${batch.financials.serviceFees?.inspection?.toFixed(2) || '0.00'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-slate-500">Processing Fee</p>
+                                                <p className="text-white">${batch.financials.serviceFees?.processing?.toFixed(2) || '0.00'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-slate-500">Platform Fee</p>
+                                                <p className="text-white">${batch.financials.serviceFees?.platform?.toFixed(2) || '0.00'}</p>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                )}
+
+                                {/* INSPECTOR VIEW: Inspection Fee Only */}
+                                {user?.role === 'QUALITY_INSPECTOR' && (
+                                    <Card className="p-6 bg-gradient-to-br from-purple-900/20 to-purple-800/10 border-purple-500/20">
+                                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                            <DollarSign className="text-purple-400" /> Service Revenue
+                                        </h3>
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <p className="text-slate-400 text-sm">Inspection Fee Earned</p>
+                                                <p className="text-3xl font-bold text-white">$50.00</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <Badge variant="success">Completed</Badge>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                )}
+
+                                {/* MILL OPERATOR VIEW: Processing Fee Only */}
+                                {user?.role === 'MILL_OPERATOR' && (
+                                    <Card className="p-6 bg-gradient-to-br from-blue-900/20 to-blue-800/10 border-blue-500/20">
+                                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                            <DollarSign className="text-blue-400" /> Processing Revenue
+                                        </h3>
+                                        <div>
+                                            <p className="text-slate-400 text-sm">Processing Fee</p>
+                                            <p className="text-3xl font-bold text-white">${(batch.weight * 2).toFixed(2)}</p>
+                                            <p className="text-xs text-slate-500 mt-1">
+                                                Calculated: {batch.weight}kg × $2.00/kg
+                                            </p>
+                                        </div>
+                                    </Card>
+                                )}
+                            </>
+                        )}
 
                         {/* Image Gallery */}
                         <Card className="overflow-hidden">

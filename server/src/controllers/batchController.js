@@ -67,9 +67,15 @@ const getBatchById = async (req, res) => {
 // @desc    Update batch status/stage
 // @route   PATCH /api/batches/:id/status
 // @access  Private (MILL_OPERATOR)
+const { calculateRevenue } = require('../utils/revenueCalculator');
+
+// @desc    Update batch status/stage
+// @route   PATCH /api/batches/:id/status
+// @access  Private (MILL_OPERATOR)
 const updateBatchStatus = async (req, res) => {
     const { stage, note } = req.body;
-    const batch = await WoolBatch.findById(req.params.id);
+    // Populate qualityReport to ensure accurate recalculation if needed
+    const batch = await WoolBatch.findById(req.params.id).populate('qualityReport');
 
     if (batch) {
         batch.currentStage = stage;
@@ -78,6 +84,11 @@ const updateBatchStatus = async (req, res) => {
             note,
             operator: req.user._id
         });
+
+        // Recalculate financials if moving to Finished or just generally to keep up to date
+        if (stage === 'Finished' || batch.qualityReport) {
+            batch.financials = calculateRevenue(batch);
+        }
 
         const updatedBatch = await batch.save();
         res.json(updatedBatch);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import client from '../api/axiosClient';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { ClipboardList, CheckCircle, FileText, ArrowRight } from 'lucide-react';
+import { ClipboardList, CheckCircle, FileText, ArrowRight, DollarSign } from 'lucide-react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -77,6 +77,24 @@ const InspectorDashboard = () => {
                             <h2 className="text-4xl font-bold text-white mt-1">
                                 {completedBatches.filter(b => new Date(b.updatedAt).toDateString() === new Date().toDateString()).length}
                             </h2>
+                        </div>
+                    </Card>
+
+                    <Card hoverEffect className="relative overflow-hidden group bg-gradient-to-br from-purple-900/20 to-purple-800/10 border-purple-500/20">
+                        <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <DollarSign size={100} />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 mb-4">
+                                <DollarSign size={24} />
+                            </div>
+                            <p className="text-slate-400 font-medium">Total Earnings</p>
+                            <h2 className="text-4xl font-bold text-white mt-1">
+                                ${completedBatches.length * 50}
+                            </h2>
+                            <p className="text-xs text-purple-300 mt-2 bg-purple-500/10 inline-block px-2 py-1 rounded">
+                                Fixed Rate: $50 / Batch
+                            </p>
                         </div>
                     </Card>
 

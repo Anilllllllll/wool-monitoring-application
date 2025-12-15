@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import client from '../api/axiosClient';
-import { Package, TrendingUp, CheckCircle, Clock, Plus, ArrowRight } from 'lucide-react';
+import { Package, TrendingUp, CheckCircle, Clock, Plus, ArrowRight, DollarSign } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import BatchTimeline from '../components/BatchTimeline';
@@ -67,7 +67,22 @@ const FarmerDashboard = () => {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <Card hoverEffect className="relative overflow-hidden group bg-gradient-to-br from-emerald-900/40 to-emerald-800/10 border-emerald-500/20">
+                        <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <DollarSign size={100} />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4">
+                                <DollarSign size={24} />
+                            </div>
+                            <p className="text-slate-400 font-medium">Total Revenue</p>
+                            <h2 className="text-3xl font-bold text-white mt-1">
+                                ${batches.reduce((sum, b) => sum + (b.financials?.netFarmerEarnings || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </h2>
+                        </div>
+                    </Card>
+
                     <Card hoverEffect className="relative overflow-hidden group">
                         <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Package size={100} />
@@ -77,7 +92,7 @@ const FarmerDashboard = () => {
                                 <Package size={24} />
                             </div>
                             <p className="text-slate-400 font-medium">Total Batches</p>
-                            <h2 className="text-4xl font-bold text-white mt-1">{totalBatches}</h2>
+                            <h2 className="text-3xl font-bold text-white mt-1">{totalBatches}</h2>
                         </div>
                     </Card>
 

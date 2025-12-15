@@ -1,3 +1,4 @@
+const { calculateRevenue } = require('../utils/revenueCalculator');
 const QualityReport = require('../models/QualityReport');
 const WoolBatch = require('../models/WoolBatch');
 
@@ -24,7 +25,14 @@ const createInspection = async (req, res) => {
     });
 
     batch.qualityReport = report._id;
-    batch.qualityStatus = decision; // Assuming auto-update status based on decision
+    batch.qualityStatus = decision;
+
+    // Calculate Revenue
+    // Construct a temporary object with populated report for the calculator
+    const batchData = batch.toObject();
+    batchData.qualityReport = report.toObject();
+    batch.financials = calculateRevenue(batchData);
+
     await batch.save();
 
     res.status(201).json(report);

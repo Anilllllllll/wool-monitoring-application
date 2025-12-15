@@ -49,16 +49,16 @@ const BatchTimeline = ({ currentStage }) => {
                                 className={cn(
                                     "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-10",
                                     isCompleted
-                                        ? "bg-primary-500 border-primary-500 text-white shadow-neon"
+                                        ? "bg-emerald-500 border-emerald-500 text-white shadow-neon"
                                         : "bg-surface border-white/10 text-slate-600",
-                                    isCurrent && "ring-4 ring-primary-500/20 shadow-neon scale-110"
+                                    isCurrent && "ring-4 ring-emerald-500/20 shadow-neon scale-110"
                                 )}
                             >
                                 {isCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
                             </motion.div>
                             <span className={cn(
                                 "mt-3 text-xs md:text-sm font-medium transition-colors duration-300 absolute -bottom-8 w-24 text-center",
-                                isCompleted ? "text-primary-300" : "text-slate-600"
+                                isCompleted ? "text-emerald-300" : "text-slate-600"
                             )}>
                                 {stage}
                             </span>
@@ -67,7 +67,7 @@ const BatchTimeline = ({ currentStage }) => {
                         {index < stages.length - 1 && (
                             <div className="flex-1 h-1 bg-white/10 mx-2 relative rounded-full overflow-hidden">
                                 <motion.div
-                                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary-500 to-secondary-500"
+                                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-400"
                                     initial={{ width: '0%' }}
                                     animate={{ width: index < currentIndex ? '100%' : '0%' }}
                                     transition={{ duration: 0.5, ease: "easeInOut" }}

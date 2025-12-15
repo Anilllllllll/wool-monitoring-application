@@ -12,7 +12,7 @@ import { Loader } from '../components/ui/Loader';
 const BatchesList = () => {
     const [batches, setBatches] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { hasPermission } = useAuth();
+    const { hasPermission, user } = useAuth();
 
     useEffect(() => {
         const fetchBatches = async () => {
@@ -99,6 +99,20 @@ const BatchesList = () => {
                                 <div className="flex justify-between text-sm py-1 border-b border-white/5">
                                     <span className="text-slate-400">Stage</span>
                                     <span className="font-semibold text-primary-400">{batch.currentStage}</span>
+                                </div>
+                                {/* Financial Context */}
+                                <div className="flex justify-between text-sm py-1 border-b border-white/5">
+                                    <span className="text-slate-400">
+                                        {user?.role === 'FARMER' ? 'Est. Revenue' :
+                                            user?.role === 'QUALITY_INSPECTOR' ? 'Service Fee' :
+                                                user?.role === 'MILL_OPERATOR' ? 'Proc. Fee' : 'Value'}
+                                    </span>
+                                    <span className="font-semibold text-emerald-400">
+                                        {user?.role === 'FARMER' ? `$${(batch.financials?.netFarmerEarnings || 0).toFixed(2)}` :
+                                            user?.role === 'QUALITY_INSPECTOR' ? (batch.qualityStatus !== 'Pending' ? '$50.00' : '-') :
+                                                user?.role === 'MILL_OPERATOR' ? `$${(batch.weight * 2).toFixed(2)}` :
+                                                    '-'}
+                                    </span>
                                 </div>
                             </div>
 

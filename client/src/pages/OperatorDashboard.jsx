@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import client from '../api/axiosClient';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { Truck, Activity, AlertTriangle, Package } from 'lucide-react';
+import { Truck, Activity, AlertTriangle, Package, DollarSign } from 'lucide-react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -51,6 +51,15 @@ const OperatorDashboard = () => {
                     </div>
 
                     <div className="flex gap-3">
+                        <div className="flex flex-col items-end mr-4">
+                            <span className="text-xs text-slate-400 uppercase tracking-wider">Processing Revenue</span>
+                            <span className="text-xl font-bold text-emerald-400 flex items-center gap-1">
+                                <DollarSign size={16} />
+                                {batches.reduce((sum, b) => sum + (b.weight * 2), 0).toLocaleString()}
+                            </span>
+                            <span className="text-[10px] text-slate-500">Rate: $2/kg</span>
+                        </div>
+
                         <div className="hidden md:flex items-center gap-2 bg-yellow-500/10 text-yellow-500 px-3 py-2 rounded-lg border border-yellow-500/20 text-sm mr-2">
                             <AlertTriangle size={16} />
                             <span>2 Machines Maintenance Due</span>
